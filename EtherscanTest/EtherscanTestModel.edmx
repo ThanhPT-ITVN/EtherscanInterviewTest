@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="EtherscanTestModel.Store" Provider="MySql.Data.MySqlClient" ProviderManifestToken="8.0" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="blocks">
+          <Key>
+            <PropertyRef Name="blockID" />
+          </Key>
+          <Property Name="blockID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="blockNumber" Type="int" Nullable="false" />
+          <Property Name="hash" Type="varchar" MaxLength="66" Nullable="false" />
+          <Property Name="parentHash" Type="varchar" MaxLength="66" Nullable="false" />
+          <Property Name="miner" Type="varchar" MaxLength="42" Nullable="false" />
+          <Property Name="blockReward" Type="decimal" Precision="50" Scale="0" Nullable="false" />
+          <Property Name="gasLimit" Type="decimal" Precision="50" Scale="0" Nullable="false" />
+          <Property Name="gasUsed" Type="decimal" Precision="50" Scale="0" Nullable="false" />
+        </EntityType>
+        <EntityType Name="transactions">
+          <Key>
+            <PropertyRef Name="transactionID" />
+          </Key>
+          <Property Name="transactionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="blockID" Type="int" Nullable="false" />
+          <Property Name="hash" Type="varchar" MaxLength="66" Nullable="false" />
+          <Property Name="fromAddress" Type="varchar" MaxLength="42" Nullable="false" />
+          <Property Name="toAddress" Type="varchar" MaxLength="42" Nullable="false" />
+          <Property Name="value" Type="decimal" Precision="50" Scale="0" Nullable="false" />
+          <Property Name="gas" Type="decimal" Precision="50" Scale="0" Nullable="false" />
+          <Property Name="gasPrice" Type="decimal" Precision="50" Scale="0" Nullable="false" />
+          <Property Name="transactionIndex" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="transactions_ibfk_1">
+          <End Role="blocks" Type="Self.blocks" Multiplicity="1" />
+          <End Role="transactions" Type="Self.transactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="blocks">
+              <PropertyRef Name="blockID" />
+            </Principal>
+            <Dependent Role="transactions">
+              <PropertyRef Name="blockID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="EtherscanTestModelStoreContainer">
+          <EntitySet Name="blocks" EntityType="Self.blocks" Schema="etherscan_test" store:Type="Tables" />
+          <EntitySet Name="transactions" EntityType="Self.transactions" Schema="etherscan_test" store:Type="Tables" />
+          <AssociationSet Name="transactions_ibfk_1" Association="Self.transactions_ibfk_1">
+            <End Role="blocks" EntitySet="blocks" />
+            <End Role="transactions" EntitySet="transactions" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="EtherscanTestModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="block">
+          <Key>
+            <PropertyRef Name="blockID" />
+          </Key>
+          <Property Name="blockID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="blockNumber" Type="Int32" Nullable="false" />
+          <Property Name="hash" Type="String" MaxLength="66" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="parentHash" Type="String" MaxLength="66" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="miner" Type="String" MaxLength="42" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="blockReward" Type="Decimal" Nullable="false" />
+          <Property Name="gasLimit" Type="Decimal" Nullable="false" />
+          <Property Name="gasUsed" Type="Decimal" Nullable="false" />
+          <NavigationProperty Name="transactions" Relationship="Self.transactions_ibfk_1" FromRole="blocks" ToRole="transactions" />
+        </EntityType>
+        <EntityType Name="transaction">
+          <Key>
+            <PropertyRef Name="transactionID" />
+          </Key>
+          <Property Name="transactionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="blockID" Type="Int32" Nullable="false" />
+          <Property Name="hash" Type="String" MaxLength="66" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="fromAddress" Type="String" MaxLength="42" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="toAddress" Type="String" MaxLength="42" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="value" Type="Decimal" Nullable="false" />
+          <Property Name="gas" Type="Decimal" Nullable="false" />
+          <Property Name="gasPrice" Type="Decimal" Nullable="false" />
+          <Property Name="transactionIndex" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="block" Relationship="Self.transactions_ibfk_1" FromRole="transactions" ToRole="blocks" />
+        </EntityType>
+        <Association Name="transactions_ibfk_1">
+          <End Role="blocks" Type="Self.block" Multiplicity="1" />
+          <End Role="transactions" Type="Self.transaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="blocks">
+              <PropertyRef Name="blockID" />
+            </Principal>
+            <Dependent Role="transactions">
+              <PropertyRef Name="blockID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="EtherscanTestEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="blocks" EntityType="Self.block" />
+          <EntitySet Name="transactions" EntityType="Self.transaction" />
+          <AssociationSet Name="transactions_ibfk_1" Association="Self.transactions_ibfk_1">
+            <End Role="blocks" EntitySet="blocks" />
+            <End Role="transactions" EntitySet="transactions" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="EtherscanTestModelStoreContainer" CdmEntityContainer="EtherscanTestEntities">
+          <EntitySetMapping Name="blocks">
+            <EntityTypeMapping TypeName="EtherscanTestModel.block">
+              <MappingFragment StoreEntitySet="blocks">
+                <ScalarProperty Name="blockID" ColumnName="blockID" />
+                <ScalarProperty Name="blockNumber" ColumnName="blockNumber" />
+                <ScalarProperty Name="hash" ColumnName="hash" />
+                <ScalarProperty Name="parentHash" ColumnName="parentHash" />
+                <ScalarProperty Name="miner" ColumnName="miner" />
+                <ScalarProperty Name="blockReward" ColumnName="blockReward" />
+                <ScalarProperty Name="gasLimit" ColumnName="gasLimit" />
+                <ScalarProperty Name="gasUsed" ColumnName="gasUsed" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="transactions">
+            <EntityTypeMapping TypeName="EtherscanTestModel.transaction">
+              <MappingFragment StoreEntitySet="transactions">
+                <ScalarProperty Name="transactionID" ColumnName="transactionID" />
+                <ScalarProperty Name="blockID" ColumnName="blockID" />
+                <ScalarProperty Name="hash" ColumnName="hash" />
+                <ScalarProperty Name="fromAddress" ColumnName="fromAddress" />
+                <ScalarProperty Name="toAddress" ColumnName="toAddress" />
+                <ScalarProperty Name="value" ColumnName="value" />
+                <ScalarProperty Name="gas" ColumnName="gas" />
+                <ScalarProperty Name="gasPrice" ColumnName="gasPrice" />
+                <ScalarProperty Name="transactionIndex" ColumnName="transactionIndex" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
